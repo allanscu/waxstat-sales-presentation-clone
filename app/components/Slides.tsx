@@ -80,6 +80,119 @@ function SmartImg({
   return <img src={list[i]} alt={alt} style={style} onError={() => setI(i + 1)} />;
 }
 
+/** Emphasis used through the deck: italic + underline. */
+function Em({ children }: { children: ReactNode }) {
+  return (
+    <span
+      style={{
+        fontStyle: "italic",
+        textDecoration: "underline",
+        textUnderlineOffset: 4,
+        textDecorationThickness: 2,
+      }}
+    >
+      {children}
+    </span>
+  );
+}
+
+/** A screenshot in browser chrome, so it reads as *their* site, not a mockup. */
+function BrowserFrame({
+  srcs,
+  alt,
+  width,
+  height,
+}: {
+  srcs: string[];
+  alt: string;
+  width: number;
+  height: number;
+}) {
+  return (
+    <div
+      style={{
+        width,
+        borderRadius: 12,
+        overflow: "hidden",
+        background: "#0e1116",
+        boxShadow: "0 25px 50px -12px rgba(0,0,0,0.6)",
+        border: "1px solid rgba(255,255,255,0.1)",
+      }}
+    >
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: 8,
+          height: 34,
+          padding: "0 14px",
+          background: "#1b2027",
+        }}
+      >
+        {["#ff5f57", "#febc2e", "#28c840"].map((c) => (
+          <span key={c} style={{ width: 12, height: 12, borderRadius: "50%", background: c }} />
+        ))}
+      </div>
+      <SmartImg
+        srcs={srcs}
+        alt={alt}
+        style={{ width, height, objectFit: "contain", objectPosition: "top" }}
+      />
+    </div>
+  );
+}
+
+/**
+ * One dot per item, sized to fit the given width.
+ *
+ * Seeing the count as a field of dots lands harder than the digits alone — it
+ * is visibly a wall of manual work. Large catalogues are capped so the dots
+ * stay legible, with the remainder stated rather than silently dropped.
+ */
+function DotMatrix({
+  count,
+  width,
+  maxDots = 600,
+  centered = false,
+}: {
+  count: number;
+  width: number;
+  maxDots?: number;
+  centered?: boolean;
+}) {
+  const shown = Math.max(0, Math.min(count, maxDots));
+  if (shown === 0) return null;
+  // A dot size that lays the count out as a comfortable block rather than a
+  // long thin strip.
+  const perRow = Math.ceil(Math.sqrt(shown * 3.2));
+  const gap = 3;
+  const dot = Math.max(4, Math.min(11, Math.floor(width / perRow) - gap));
+  return (
+    <div style={{ width, marginTop: 20 }}>
+      <div
+        style={{
+          display: "flex",
+          flexWrap: "wrap",
+          gap,
+          justifyContent: centered ? "center" : "flex-start",
+        }}
+      >
+        {Array.from({ length: shown }, (_, i) => (
+          <span
+            key={i}
+            style={{ width: dot, height: dot, borderRadius: 2, background: ACCENT, opacity: 0.85 }}
+          />
+        ))}
+      </div>
+      {count > shown && (
+        <div style={{ fontSize: 13, marginTop: 8, color: "rgba(255,255,255,0.4)" }}>
+          + {(count - shown).toLocaleString()} more
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ── Slide registry ─────────────────────────────────────────────────────────
 
 export type SlideDef = {
@@ -277,38 +390,112 @@ export function buildSlides(p: Prospect, opts?: { all?: boolean }): SlideDef[] {
   }
 
   // 5. Their site (optional)
+  //
+  // The count is the argument, not the screenshot: their own storefront sits
+  // beside it so the number can't be waved away as a generic industry stat.
+  // With no capture available the count carries the slide alone, so it centres
+  // and scales up rather than leaving a hole where the frame would be.
   if (on("prospect-site")) {
+    const withImage = shots.length > 0;
+    const stat = (
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: withImage ? "flex-start" : "center",
+          textAlign: withImage ? "left" : "center",
+        }}
+      >
+        {/* Deliberately not "on your site right now": the count is often an
+            estimate, and framing it as the workload rather than an audited
+            figure stays true either way. */}
+        <div
+          style={{
+            fontSize: 13,
+            letterSpacing: "0.3em",
+            textTransform: "uppercase",
+            color: ACCENT,
+          }}
+        >
+          What you&rsquo;re up against
+        </div>
+        <div
+          style={{
+            fontSize: withImage ? 132 : 200,
+            fontWeight: 800,
+            lineHeight: 0.92,
+            marginTop: 12,
+          }}
+        >
+          {cost.items.toLocaleString()}
+        </div>
+        <div
+          style={{
+            fontSize: withImage ? 27 : 34,
+            lineHeight: 1.25,
+            marginTop: 10,
+            maxWidth: withImage ? 460 : 760,
+            textWrap: "balance",
+          }}
+        >
+          <Em>items</Em> in your catalogue
+        </div>
+        <DotMatrix
+          count={cost.items}
+          width={withImage ? 470 : 820}
+          centered={!withImage}
+        />
+        <div
+          style={{
+            fontSize: withImage ? 21 : 25,
+            lineHeight: 1.3,
+            marginTop: 18,
+            color: "rgba(255,255,255,0.75)",
+          }}
+        >
+          …and every one gets priced <Em>by hand</Em>.
+        </div>
+      </div>
+    );
+
     slides.push({
       id: "prospect-site",
       title: "Their site",
       optional: true,
       el: (
         <Slide>
-          <Title>{company} today</Title>
-          <Rule />
-          <div
-            style={{
-              background: "#000",
-              borderRadius: 16,
-              overflow: "hidden",
-              height: 400,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            {shots.length ? (
-              <SmartImg
-                srcs={shots}
-                alt={`${company} website`}
-                style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "top" }}
-              />
-            ) : (
-              <span style={{ opacity: 0.5, fontSize: 22 }}>
-                Add a website above to capture a screenshot
-              </span>
-            )}
-          </div>
+          {withImage ? (
+            <div style={{ display: "flex", alignItems: "center", height: "100%", gap: 46 }}>
+              <div style={{ flex: "none" }}>
+                {/* 560×350 is the capture's own 16:10, so the whole page fits
+                    with nothing cropped off the bottom. */}
+                <BrowserFrame
+                  srcs={shots}
+                  alt={`${company} website`}
+                  width={560}
+                  height={350}
+                />
+                <div
+                  style={{ fontSize: 15, marginTop: 12, color: "rgba(255,255,255,0.45)" }}
+                >
+                  {domainOf(p.website) || "their site"}
+                </div>
+              </div>
+              <div style={{ flex: 1 }}>{stat}</div>
+            </div>
+          ) : (
+            <div
+              style={{
+                display: "flex",
+                height: "100%",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              {stat}
+            </div>
+          )}
         </Slide>
       ),
     });
