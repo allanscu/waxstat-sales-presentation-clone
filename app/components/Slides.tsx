@@ -8,8 +8,10 @@ import {
   Feature,
   PARTNERS,
   Prospect,
+  SlideGroup,
   THREE_QUESTIONS,
   TIERS,
+  applySlideOrder,
   computeCost,
   domainOf,
   faviconUrl,
@@ -316,9 +318,9 @@ function FeatureCard({ feature }: { feature: Feature }) {
 export type SlideDef = {
   id: string;
   title: string;
+  /** Which meeting this slide belongs to. "general" slides are always in. */
+  group: SlideGroup;
   el: ReactNode;
-  /** Optional slides get a checkbox in the builder; required ones don't. */
-  optional?: boolean;
 };
 
 /**
@@ -328,6 +330,9 @@ export type SlideDef = {
  * adding a slide means pushing one entry here, and it shows up in the preview,
  * the thumbnails, present mode and the PDF at once.
  *
+ * Slides are built unconditionally and filtered once at the bottom, so there
+ * is a single place that decides what's in a deck and in what order.
+ *
  * `opts.all` ignores the include-toggles: the builder needs the full list to
  * render a checkbox for a slide that is currently switched off.
  */
@@ -335,7 +340,6 @@ export function buildSlides(p: Prospect, opts?: { all?: boolean }): SlideDef[] {
   const cost = computeCost(p);
   const company = p.companyName || domainOf(p.website) || "Your Company";
   const all = opts?.all === true;
-  const on = (id: string) => all || p.enabled?.[id] !== false;
 
   const logos = [p.logoUrl, faviconUrl(p.website)].filter(Boolean);
   // A hand-entered URL wins, then the capture services in order of how well
@@ -354,6 +358,7 @@ export function buildSlides(p: Prospect, opts?: { all?: boolean }): SlideDef[] {
   // 1. Cover
   slides.push({
     id: "cover",
+    group: "general",
     title: "Cover",
     el: (
       <Slide>
@@ -416,6 +421,7 @@ export function buildSlides(p: Prospect, opts?: { all?: boolean }): SlideDef[] {
   // 2. The problem, as three questions
   slides.push({
     id: "questions",
+    group: "discovery",
     title: "The three questions",
     el: (
       <Slide>
@@ -446,6 +452,7 @@ export function buildSlides(p: Prospect, opts?: { all?: boolean }): SlideDef[] {
   // 3. What you get
   slides.push({
     id: "features",
+    group: "proposal",
     title: "What you get",
     el: (
       <Slide>
@@ -461,49 +468,47 @@ export function buildSlides(p: Prospect, opts?: { all?: boolean }): SlideDef[] {
   });
 
   // 4. Social proof (optional)
-  if (on("partners")) {
-    slides.push({
-      id: "partners",
-      title: "Who already uses it",
-      optional: true,
-      el: (
-        <Slide>
-          <Title>The industry already trusts us</Title>
-          <Rule />
-          {/* 5 across × 4 down for 20 logos. A wall is the point — the count
-              is doing as much work here as any individual name on it. */}
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: 13 }}>
-            {PARTNERS.map((partner) => (
-              <div
-                key={partner.name}
-                style={{
-                  height: 97,
-                  padding: "12px 16px",
-                  borderRadius: 12,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  // White-on-transparent artwork would disappear on a white
-                  // tile, so those partners get a dark one instead.
-                  background: partner.onDark ? "#111827" : "#ffffff",
-                }}
-              >
-                <img
-                  src={partner.logo}
-                  alt={partner.name}
-                  style={{ maxHeight: "100%", maxWidth: "100%", objectFit: "contain" }}
-                />
-              </div>
-            ))}
-          </div>
-          <div style={{ marginTop: 18, fontSize: 15, opacity: 0.45 }}>
-            Invented companies with invented artwork — swap PARTNERS and the
-            files in /public/partners for your own.
-          </div>
-        </Slide>
-      ),
-    });
-  }
+  slides.push({
+    id: "partners",
+    group: "proposal",
+    title: "Who already uses it",
+    el: (
+      <Slide>
+        <Title>The industry already trusts us</Title>
+        <Rule />
+        {/* 5 across × 4 down for 20 logos. A wall is the point — the count
+            is doing as much work here as any individual name on it. */}
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: 13 }}>
+          {PARTNERS.map((partner) => (
+            <div
+              key={partner.name}
+              style={{
+                height: 97,
+                padding: "12px 16px",
+                borderRadius: 12,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                // White-on-transparent artwork would disappear on a white
+                // tile, so those partners get a dark one instead.
+                background: partner.onDark ? "#111827" : "#ffffff",
+              }}
+            >
+              <img
+                src={partner.logo}
+                alt={partner.name}
+                style={{ maxHeight: "100%", maxWidth: "100%", objectFit: "contain" }}
+              />
+            </div>
+          ))}
+        </div>
+        <div style={{ marginTop: 18, fontSize: 15, opacity: 0.45 }}>
+          Invented companies with invented artwork — swap PARTNERS and the
+          files in /public/partners for your own.
+        </div>
+      </Slide>
+    ),
+  });
 
   // 5. Their site (optional)
   //
@@ -511,115 +516,114 @@ export function buildSlides(p: Prospect, opts?: { all?: boolean }): SlideDef[] {
   // beside it so the number can't be waved away as a generic industry stat.
   // With no capture available the count carries the slide alone, so it centres
   // and scales up rather than leaving a hole where the frame would be.
-  if (on("prospect-site")) {
-    const withImage = shots.length > 0;
-    const stat = (
+  const withImage = shots.length > 0;
+  const stat = (
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: withImage ? "flex-start" : "center",
+        textAlign: withImage ? "left" : "center",
+      }}
+    >
+      {/* Deliberately not "on your site right now": the count is often an
+          estimate, and framing it as the workload rather than an audited
+          figure stays true either way. */}
       <div
         style={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: withImage ? "flex-start" : "center",
-          textAlign: withImage ? "left" : "center",
+          fontSize: 13,
+          letterSpacing: "0.3em",
+          textTransform: "uppercase",
+          color: ACCENT,
         }}
       >
-        {/* Deliberately not "on your site right now": the count is often an
-            estimate, and framing it as the workload rather than an audited
-            figure stays true either way. */}
-        <div
-          style={{
-            fontSize: 13,
-            letterSpacing: "0.3em",
-            textTransform: "uppercase",
-            color: ACCENT,
-          }}
-        >
-          What you&rsquo;re up against
-        </div>
-        <div
-          style={{
-            fontSize: withImage ? 132 : 200,
-            fontWeight: 800,
-            lineHeight: 0.92,
-            marginTop: 12,
-          }}
-        >
-          {cost.items.toLocaleString()}
-        </div>
-        <div
-          style={{
-            fontSize: withImage ? 27 : 34,
-            lineHeight: 1.25,
-            marginTop: 10,
-            maxWidth: withImage ? 460 : 760,
-            textWrap: "balance",
-          }}
-        >
-          <Em>items</Em> in your catalogue
-        </div>
-        <DotMatrix
-          count={cost.items}
-          width={withImage ? 470 : 820}
-          centered={!withImage}
-        />
-        <div
-          style={{
-            fontSize: withImage ? 21 : 25,
-            lineHeight: 1.3,
-            marginTop: 18,
-            color: "rgba(255,255,255,0.75)",
-          }}
-        >
-          …and every one gets priced <Em>by hand</Em>.
-        </div>
+        What you&rsquo;re up against
       </div>
-    );
+      <div
+        style={{
+          fontSize: withImage ? 132 : 200,
+          fontWeight: 800,
+          lineHeight: 0.92,
+          marginTop: 12,
+        }}
+      >
+        {cost.items.toLocaleString()}
+      </div>
+      <div
+        style={{
+          fontSize: withImage ? 27 : 34,
+          lineHeight: 1.25,
+          marginTop: 10,
+          maxWidth: withImage ? 460 : 760,
+          textWrap: "balance",
+        }}
+      >
+        <Em>items</Em> in your catalogue
+      </div>
+      <DotMatrix
+        count={cost.items}
+        width={withImage ? 470 : 820}
+        centered={!withImage}
+      />
+      <div
+        style={{
+          fontSize: withImage ? 21 : 25,
+          lineHeight: 1.3,
+          marginTop: 18,
+          color: "rgba(255,255,255,0.75)",
+        }}
+      >
+        …and every one gets priced <Em>by hand</Em>.
+      </div>
+    </div>
+  );
 
-    slides.push({
-      id: "prospect-site",
-      title: "Their site",
-      optional: true,
-      el: (
-        <Slide>
-          {withImage ? (
-            <div style={{ display: "flex", alignItems: "center", height: "100%", gap: 46 }}>
-              <div style={{ flex: "none" }}>
-                {/* 560×350 is the capture's own 16:10, so the whole page fits
-                    with nothing cropped off the bottom. */}
-                <BrowserFrame
-                  srcs={shots}
-                  alt={`${company} website`}
-                  width={560}
-                  height={350}
-                />
-                <div
-                  style={{ fontSize: 15, marginTop: 12, color: "rgba(255,255,255,0.45)" }}
-                >
-                  {domainOf(p.website) || "their site"}
-                </div>
+  slides.push({
+    id: "prospect-site",
+    group: "discovery",
+    title: "Their site",
+    el: (
+      <Slide>
+        {withImage ? (
+          <div style={{ display: "flex", alignItems: "center", height: "100%", gap: 46 }}>
+            <div style={{ flex: "none" }}>
+              {/* 560×350 is the capture's own 16:10, so the whole page fits
+                  with nothing cropped off the bottom. */}
+              <BrowserFrame
+                srcs={shots}
+                alt={`${company} website`}
+                width={560}
+                height={350}
+              />
+              <div
+                style={{ fontSize: 15, marginTop: 12, color: "rgba(255,255,255,0.45)" }}
+              >
+                {domainOf(p.website) || "their site"}
               </div>
-              <div style={{ flex: 1 }}>{stat}</div>
             </div>
-          ) : (
-            <div
-              style={{
-                display: "flex",
-                height: "100%",
-                flexDirection: "column",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              {stat}
-            </div>
-          )}
-        </Slide>
-      ),
-    });
-  }
+            <div style={{ flex: 1 }}>{stat}</div>
+          </div>
+        ) : (
+          <div
+            style={{
+              display: "flex",
+              height: "100%",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            {stat}
+          </div>
+        )}
+      </Slide>
+    ),
+  });
 
   // 6. The cost of doing it by hand — the one computed slide
   slides.push({
     id: "what-if",
+    group: "discovery",
     title: "What if…",
     el: (
       <Slide>
@@ -661,47 +665,46 @@ export function buildSlides(p: Prospect, opts?: { all?: boolean }): SlideDef[] {
   });
 
   // 7. Pricing (optional)
-  if (on("pricing")) {
-    slides.push({
-      id: "pricing",
-      title: "Pricing",
-      optional: true,
-      el: (
-        <Slide>
-          <Title>Pricing</Title>
-          <Rule />
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 24 }}>
-            {TIERS.map((t) => (
-              <div
-                key={t.name}
-                style={{
-                  borderRadius: 20,
-                  padding: 32,
-                  minHeight: 320,
-                  background: t.popular ? ACCENT : "rgba(255,255,255,0.06)",
-                  border: `1px solid ${t.popular ? ACCENT : "rgba(255,255,255,0.12)"}`,
-                  // The teal is light: the highlighted card takes onyx text,
-                  // not the white the rest of the slide inherits.
-                  color: t.popular ? INK : "#fff",
-                }}
-              >
-                <div style={{ fontSize: 18, letterSpacing: "0.14em", textTransform: "uppercase", opacity: 0.8 }}>
-                  {t.name}
-                </div>
-                <div style={{ fontSize: 52, fontWeight: 800, margin: "14px 0" }}>{t.price}</div>
-                <div style={{ fontSize: 22, opacity: 0.85, lineHeight: 1.35 }}>{t.blurb}</div>
-                <div style={{ fontSize: 20, opacity: 0.7, marginTop: 20 }}>{t.limit}</div>
+  slides.push({
+    id: "pricing",
+    group: "proposal",
+    title: "Pricing",
+    el: (
+      <Slide>
+        <Title>Pricing</Title>
+        <Rule />
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 24 }}>
+          {TIERS.map((t) => (
+            <div
+              key={t.name}
+              style={{
+                borderRadius: 20,
+                padding: 32,
+                minHeight: 320,
+                background: t.popular ? ACCENT : "rgba(255,255,255,0.06)",
+                border: `1px solid ${t.popular ? ACCENT : "rgba(255,255,255,0.12)"}`,
+                // The teal is light: the highlighted card takes onyx text,
+                // not the white the rest of the slide inherits.
+                color: t.popular ? INK : "#fff",
+              }}
+            >
+              <div style={{ fontSize: 18, letterSpacing: "0.14em", textTransform: "uppercase", opacity: 0.8 }}>
+                {t.name}
               </div>
-            ))}
-          </div>
-        </Slide>
-      ),
-    });
-  }
+              <div style={{ fontSize: 52, fontWeight: 800, margin: "14px 0" }}>{t.price}</div>
+              <div style={{ fontSize: 22, opacity: 0.85, lineHeight: 1.35 }}>{t.blurb}</div>
+              <div style={{ fontSize: 20, opacity: 0.7, marginTop: 20 }}>{t.limit}</div>
+            </div>
+          ))}
+        </div>
+      </Slide>
+    ),
+  });
 
   // 8. Contact
   slides.push({
     id: "contact",
+    group: "general",
     title: "Contact",
     el: (
       <Slide>
@@ -720,5 +723,12 @@ export function buildSlides(p: Prospect, opts?: { all?: boolean }): SlideDef[] {
     ),
   });
 
-  return slides;
+  // "general" slides top and tail every deck and aren't toggleable. Everything
+  // else is in unless explicitly switched off, so a deck saved before a slide
+  // existed still gets it.
+  const included = all
+    ? slides
+    : slides.filter((s) => s.group === "general" || p.enabled?.[s.id] !== false);
+
+  return applySlideOrder(included, p.slideOrder);
 }

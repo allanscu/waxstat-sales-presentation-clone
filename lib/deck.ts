@@ -33,9 +33,74 @@ export type Prospect = {
   presenterName: string;
   presenterEmail: string;
 
-  /** Which optional slides to include, keyed by slide id. */
+  /** Which slides to include, keyed by slide id. Absent means included. */
   enabled: Record<string, boolean>;
+
+  /**
+   * Custom slide order, as slide ids. Empty means the deck's natural order.
+   * Ids that aren't currently rendered are ignored, and a slide missing from
+   * the list — a newly re-enabled one, or one added in a later release — slots
+   * in beside its natural neighbour rather than being dumped at the end.
+   */
+  slideOrder: string[];
 };
+
+/**
+ * Which meeting a slide belongs to. "general" slides — the cover and the
+ * contact page — top and tail any deck; the rest belong to a specific meeting.
+ */
+export type SlideGroup = "general" | "discovery" | "proposal";
+
+export const SLIDE_GROUPS: { id: SlideGroup; label: string; hint: string }[] = [
+  { id: "general", label: "General purpose", hint: "In every deck" },
+  { id: "discovery", label: "Discovery", hint: "Their problem, in their terms" },
+  { id: "proposal", label: "Proposal", hint: "What you offer, and what it costs" },
+];
+
+/**
+ * The meetings you can actually be in — every group bar "general", which is
+ * the material both of them share rather than a meeting of its own. Drives the
+ * preset buttons above the include list.
+ */
+export const MEETINGS = SLIDE_GROUPS.filter((g) => g.id !== "general");
+
+/**
+ * Apply a saved slide order to the deck's natural order.
+ *
+ * Slides the order doesn't mention are spliced in after whichever of their
+ * natural predecessors survived, so a slide switched back on lands next to
+ * where it belongs instead of at the end of the deck. That matters because the
+ * order is saved per prospect and outlives any single edit: without it, every
+ * toggle would quietly reshuffle a deck someone had already arranged.
+ */
+export function applySlideOrder<T extends { id: string }>(
+  natural: T[],
+  order: string[],
+): T[] {
+  if (!order?.length) return natural;
+  const rank = new Map(order.map((id, i) => [id, i]));
+
+  const out = natural
+    .filter((s) => rank.has(s.id))
+    .sort((a, b) => rank.get(a.id)! - rank.get(b.id)!);
+
+  natural.forEach((slide, i) => {
+    if (rank.has(slide.id)) return;
+    // Walk back to the nearest earlier slide that did survive, and land just
+    // after it. Nothing earlier survived → the front of the deck.
+    let at = 0;
+    for (let j = i - 1; j >= 0; j--) {
+      const k = out.findIndex((o) => o.id === natural[j].id);
+      if (k >= 0) {
+        at = k + 1;
+        break;
+      }
+    }
+    out.splice(at, 0, slide);
+  });
+
+  return out;
+}
 
 export const DEFAULT_PROSPECT: Prospect = {
   companyName: "",
@@ -50,11 +115,9 @@ export const DEFAULT_PROSPECT: Prospect = {
   presenterName: "",
   presenterEmail: "",
 
-  enabled: {
-    "prospect-site": true,
-    partners: true,
-    pricing: true,
-  },
+  // Empty means "every slide in". Presets and checkboxes write entries here.
+  enabled: {},
+  slideOrder: [],
 };
 
 // ── Fixed pitch content (placeholder) ──────────────────────────────────────

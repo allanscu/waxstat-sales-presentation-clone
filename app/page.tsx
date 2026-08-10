@@ -6,7 +6,7 @@ import ScaledSlide from "./components/ScaledSlide";
 import VersionFooter from "./components/VersionFooter";
 import { buildSlides } from "./components/Slides";
 import { STORAGE_KEY } from "./lib/storage";
-import { BRAND, DEFAULT_PROSPECT, Prospect } from "@/lib/deck";
+import { BRAND, DEFAULT_PROSPECT, MEETINGS, Prospect, SlideGroup } from "@/lib/deck";
 
 /**
  * The builder: form on the left, live preview on the right.
@@ -25,6 +25,8 @@ export default function Page() {
   const [candidates, setCandidates] = useState<string[]>([]);
   const [fetching, setFetching] = useState(false);
   const [status, setStatus] = useState<string | null>(null);
+  const [dragFrom, setDragFrom] = useState<number | null>(null);
+  const [dragOver, setDragOver] = useState<number | null>(null);
 
   const set = useCallback(
     <K extends keyof Prospect>(key: K, value: Prospect[K]) =>
@@ -72,6 +74,35 @@ export default function Page() {
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [present, go]);
+
+  /**
+   * Move a slide and persist the result.
+   *
+   * The saved order is the ids of the slides currently on screen. Slides that
+   * are switched off aren't in it, and applySlideOrder splices them back beside
+   * their natural neighbour if they're switched on again — so reordering a
+   * short deck doesn't scramble the full one.
+   */
+  function moveSlide(from: number, to: number) {
+    if (from === to) return;
+    const ids = slides.map((s) => s.id);
+    const [moved] = ids.splice(from, 1);
+    ids.splice(to, 0, moved);
+    set("slideOrder", ids);
+    setIdx(to);
+  }
+
+  /** Switch on just the slides for one meeting (or all of them). */
+  function applyPreset(group: SlideGroup | "all") {
+    const next: Record<string, boolean> = {};
+    for (const s of allSlides) {
+      // General slides are always in, so they get no entry either way.
+      if (s.group === "general") continue;
+      next[s.id] = group === "all" || s.group === group;
+    }
+    set("enabled", next);
+    setIdx(0);
+  }
 
   /** Ask the server for logo candidates from the prospect's site. */
   async function fetchLogos() {
@@ -269,20 +300,48 @@ export default function Page() {
           </Card>
 
           <Card title="Slides to include">
-            {allSlides
-              .filter((s) => s.optional)
-              .map((s) => (
-                <label key={s.id} className="flex items-center gap-2 text-sm">
-                  <input
-                    type="checkbox"
-                    checked={p.enabled[s.id] !== false}
-                    onChange={(e) =>
-                      set("enabled", { ...p.enabled, [s.id]: e.target.checked })
-                    }
-                  />
-                  {s.title}
-                </label>
+            {/* Presets pick the deck you'd take into a given meeting. General
+                slides aren't listed — they're in every deck either way. */}
+            <div className="flex flex-wrap gap-2">
+              {MEETINGS.map((m) => (
+                <button
+                  key={m.id}
+                  onClick={() => applyPreset(m.id)}
+                  title={m.hint}
+                  className="rounded-lg border border-ink/20 px-2.5 py-1 text-xs hover:bg-ink/5"
+                >
+                  {m.label}
+                </button>
               ))}
+              <button
+                onClick={() => applyPreset("all")}
+                className="rounded-lg border border-ink/20 px-2.5 py-1 text-xs hover:bg-ink/5"
+              >
+                All
+              </button>
+            </div>
+
+            {MEETINGS.map((m) => (
+              <div key={m.id} className="space-y-1">
+                <div className="text-xs font-semibold uppercase tracking-wide text-ink/40">
+                  {m.label}
+                </div>
+                {allSlides
+                  .filter((s) => s.group === m.id)
+                  .map((s) => (
+                    <label key={s.id} className="flex items-center gap-2 text-sm">
+                      <input
+                        type="checkbox"
+                        checked={p.enabled[s.id] !== false}
+                        onChange={(e) =>
+                          set("enabled", { ...p.enabled, [s.id]: e.target.checked })
+                        }
+                      />
+                      {s.title}
+                    </label>
+                  ))}
+              </div>
+            ))}
           </Card>
 
           <button
@@ -315,9 +374,31 @@ export default function Page() {
               <button
                 key={s.id}
                 onClick={() => setIdx(i)}
-                className={`overflow-hidden rounded-lg border-2 text-left ${
-                  i === current ? "border-accent" : "border-transparent"
-                }`}
+                draggable
+                onDragStart={() => setDragFrom(i)}
+                onDragOver={(e) => {
+                  // Without preventDefault the browser refuses the drop.
+                  e.preventDefault();
+                  setDragOver(i);
+                }}
+                onDrop={(e) => {
+                  e.preventDefault();
+                  if (dragFrom !== null) moveSlide(dragFrom, i);
+                  setDragFrom(null);
+                  setDragOver(null);
+                }}
+                onDragEnd={() => {
+                  setDragFrom(null);
+                  setDragOver(null);
+                }}
+                title={`${s.title} — drag to reorder`}
+                className={`overflow-hidden rounded-lg border-2 text-left transition ${
+                  dragOver === i && dragFrom !== i
+                    ? "border-accent-dark"
+                    : i === current
+                      ? "border-accent"
+                      : "border-transparent"
+                } ${dragFrom === i ? "opacity-40" : ""}`}
               >
                 {/* Slides render inside this <button>, which is why nothing in
                     a slide may itself be interactive. */}

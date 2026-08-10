@@ -21,8 +21,11 @@ A deck is **fixed vendor content** (the same for everyone) plus a handful of
 | Items · min each · $/hour | The "what that costs by hand" math (auto-computed) |
 | Presenter name / email | Cover and contact slides |
 
-Optional slides are toggleable per prospect. Inputs persist to `localStorage`,
-so a half-built deck survives a refresh.
+Slides are toggleable per prospect, and **drag the thumbnails to reorder** —
+the order is saved with the prospect. **Meeting presets** ("Discovery",
+"Proposal") switch on just the slides for one conversation, so a single slide
+registry produces several decks. Inputs persist to `localStorage`, so a
+half-built deck survives a refresh.
 
 ## Architecture
 
@@ -39,9 +42,12 @@ app/api/auth + middleware   password gate over everything
 Three ideas carry the whole design:
 
 **Slides are data.** `buildSlides(prospect)` returns an array of
-`{ id, title, el }`. Adding a slide means pushing one entry — it appears in the
-preview, the thumbnails, present mode and the PDF at once, with no other
-wiring.
+`{ id, title, group, el }`. Adding a slide means pushing one entry — it appears
+in the preview, the thumbnails, present mode and the PDF at once, with no other
+wiring, and it inherits include-toggles, meeting presets and drag-to-reorder
+for free. Reordering is just a list of ids: `applySlideOrder` re-applies it,
+splicing any slide the saved order doesn't mention in beside its natural
+neighbour rather than dumping it at the end.
 
 **One fixed canvas.** Every slide is authored in absolute px against a
 1280×720 box. `ScaledSlide` applies a single CSS transform to fit it to a

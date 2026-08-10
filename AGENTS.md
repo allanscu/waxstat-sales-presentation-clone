@@ -5,12 +5,20 @@ Next.js 16 + React 19 + Tailwind v4 + TypeScript. Deploys to Vercel.
 ## Architecture
 
 - `lib/deck.ts` — the `Prospect` data model, all fixed pitch copy (features,
-  partners, tiers), the cost math (`computeCost`), and URL helpers
+  partners, tiers), the cost math (`computeCost`), slide grouping
+  (`SlideGroup`, `MEETINGS`), `applySlideOrder`, and URL helpers
   (`screenshotUrl`, `faviconUrl`, `domainOf`). Edit content here, not in slides.
 - `app/components/Slides.tsx` — `buildSlides(prospect)` returns the ordered
   slide list. Each slide is authored on a fixed **1280×720** canvas
   (`.slide-canvas`); use px units inside slides so scaling stays
-  resolution-independent.
+  resolution-independent. Slides are built unconditionally and filtered once at
+  the bottom of `buildSlides`, so one place decides what's in a deck and in
+  what order.
+- **Groups and order are independent.** A slide's `group` decides which meeting
+  it belongs to (the preset buttons write `enabled`); `slideOrder` decides the
+  sequence. Switching presets doesn't disturb a custom order, because the order
+  is stored as ids and re-applied to whatever survives the filter. `general`
+  slides are in every deck and get no checkbox.
 - `app/components/ScaledSlide.tsx` — scales a slide to fit width (preview) or
   the viewport (present mode).
 - `app/page.tsx` — the builder: form (left) + live preview and thumbnails
