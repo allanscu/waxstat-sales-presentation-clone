@@ -41,6 +41,12 @@ Next.js 16 + React 19 + Tailwind v4 + TypeScript. Deploys to Vercel.
 - PDF export is `window.print()` + `@media print` in `globals.css` (`@page` is
   landscape 1280×720, one `.print-slide` per page). No PDF library.
 - Auto-fetched logos are always *confirmed* by the rep, never auto-applied.
+- **Screenshot candidate order is load-bearing.** `SmartImg` falls through on
+  `<img>` onError, so it can only skip a candidate that fails *as an image*.
+  mShots answers a site it can't capture with a valid PNG of an error page, so
+  onError never fires and everything behind it in the list is unreachable.
+  Microlink goes first because it fails honestly (HTTP error → onError → next
+  candidate). Don't reorder these without re-reading `screenshotUrl()`.
 - Feature icons are matched by regex against the feature copy (`FEATURE_ICONS`
   in `Slides.tsx`), so `FEATURES` in `deck.ts` stays plain strings. **Order is
   significant** — the first regex that matches wins, and features overlap

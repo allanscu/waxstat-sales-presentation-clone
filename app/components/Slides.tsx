@@ -13,6 +13,7 @@ import {
   computeCost,
   domainOf,
   faviconUrl,
+  mshotsUrl,
   screenshotUrl,
   usd0,
 } from "@/lib/deck";
@@ -337,7 +338,16 @@ export function buildSlides(p: Prospect, opts?: { all?: boolean }): SlideDef[] {
   const on = (id: string) => all || p.enabled?.[id] !== false;
 
   const logos = [p.logoUrl, faviconUrl(p.website)].filter(Boolean);
-  const shots = [p.screenshotUrl, screenshotUrl(p.website)].filter(Boolean);
+  // A hand-entered URL wins, then the capture services in order of how well
+  // they fail — see screenshotUrl() in deck.ts. Deduped, since retrying an
+  // identical URL only delays reaching the next candidate.
+  const shots = [
+    ...new Set(
+      [p.screenshotUrl.trim(), screenshotUrl(p.website), mshotsUrl(p.website)].filter(
+        Boolean,
+      ),
+    ),
+  ];
 
   const slides: SlideDef[] = [];
 

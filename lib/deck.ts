@@ -239,10 +239,33 @@ export function normalizeUrl(raw: string): string {
 }
 
 /**
- * Site screenshot via a keyless third-party service. Fine for a demo; swap in
- * a service with an API key if you need it to be reliable.
+ * Site screenshot, keyless.
+ *
+ * Microlink is primary: it renders the page in a real browser, and
+ * `embed=screenshot.url` makes it serve the image directly, so it drops
+ * straight into an <img>.
+ *
+ * The order matters more than it looks. mShots answers a site it can't capture
+ * with a *valid image of an error page* rather than an HTTP error — so <img>
+ * onError never fires and SmartImg cannot fall through it. Anything behind
+ * mShots in the candidate list is unreachable, which is why the service that
+ * fails honestly goes first.
+ *
+ * Anonymous Microlink use is rate-limited per viewer IP, so mShots stays on as
+ * the fallback for when that limit is hit.
  */
-export function screenshotUrl(raw: string, width = 1280): string {
+export function screenshotUrl(raw: string): string {
+  const u = normalizeUrl(raw);
+  if (!u) return "";
+  return (
+    "https://api.microlink.io/?url=" +
+    encodeURIComponent(u) +
+    "&screenshot=true&meta=false&embed=screenshot.url"
+  );
+}
+
+/** WordPress mShots — the fallback. See the note above about how it fails. */
+export function mshotsUrl(raw: string, width = 1280): string {
   const u = normalizeUrl(raw);
   if (!u) return "";
   return `https://s.wordpress.com/mshots/v1/${encodeURIComponent(u)}?w=${width}`;
