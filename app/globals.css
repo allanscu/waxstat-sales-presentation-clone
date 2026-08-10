@@ -1,0 +1,55 @@
+@import "tailwindcss";
+
+/* ── Brand tokens ─────────────────────────────────────────────────────
+   Placeholder palette — swap these three for your own and the whole deck
+   follows. Slides keep the dark `ink` background in both themes; only the
+   builder chrome is light. */
+@theme {
+  --color-accent: #6366f1;
+  --color-accent-dark: #4f46e5;
+  --color-ink: #14161c;
+  --color-paper: #f3f4f6;
+}
+
+/* ── Slide sizing ─────────────────────────────────────────────────────
+   Slides are authored against a fixed 1280×720 (16:9) canvas and scaled to
+   fit their container (see ScaledSlide). Everything inside a slide uses px
+   units, so a slide looks identical at any display size and in the PDF. */
+.slide-canvas {
+  width: 1280px;
+  height: 720px;
+  flex: none;
+  /* Keep slide backgrounds in the printed PDF. */
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+/* ── Print / PDF export ───────────────────────────────────────────────
+   PDF export is window.print() against the hidden .print-deck — one slide per
+   landscape page at the slide's native size. No PDF library involved. */
+@media print {
+  @page {
+    size: 1280px 720px;
+    margin: 0;
+  }
+  html,
+  body {
+    background: #14161c !important;
+  }
+  .no-print {
+    display: none !important;
+  }
+  .print-deck {
+    display: block !important;
+  }
+  .print-slide {
+    width: 1280px;
+    height: 720px;
+    page-break-after: always;
+    break-after: page;
+    overflow: hidden;
+  }
+  .print-slide:last-child {
+    page-break-after: auto;
+  }
+}
