@@ -41,6 +41,12 @@ Next.js 16 + React 19 + Tailwind v4 + TypeScript. Deploys to Vercel.
 - PDF export is `window.print()` + `@media print` in `globals.css` (`@page` is
   landscape 1280×720, one `.print-slide` per page). No PDF library.
 - Auto-fetched logos are always *confirmed* by the rep, never auto-applied.
+- Feature icons are matched by regex against the feature copy (`FEATURE_ICONS`
+  in `Slides.tsx`), so `FEATURES` in `deck.ts` stays plain strings. **Order is
+  significant** — the first regex that matches wins, and features overlap
+  ("Automated repricing rules" contains "pricing"). Put the specific rule above
+  the general one and check the mapping after editing copy; an unmatched
+  feature silently falls back to a checkmark rather than erroring.
 
 ## Content
 

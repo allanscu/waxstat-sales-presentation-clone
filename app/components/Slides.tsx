@@ -193,6 +193,107 @@ function DotMatrix({
   );
 }
 
+function LineIcon({
+  paths,
+  width = 1.8,
+  size = 20,
+}: {
+  paths: string[];
+  width?: number;
+  size?: number;
+}) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      width={size}
+      height={size}
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={width}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      {paths.map((d, i) => (
+        <path key={i} d={d} />
+      ))}
+    </svg>
+  );
+}
+
+/**
+ * An icon per feature, matched on the copy itself so the FEATURES list in
+ * deck.ts stays the single source of truth — reword a feature and it keeps a
+ * sensible icon, with a checkmark as the fallback when nothing matches.
+ *
+ * Order matters. "Automated repricing rules" contains "pricing", so the
+ * automation rule has to be tested before the pricing one or every repricing
+ * feature gets a price tag.
+ */
+const FEATURE_ICONS: [RegExp, string[]][] = [
+  [/automat|repric|rule/i, ["M4 12a8 8 0 0 1 13.7-5.6", "M20 12a8 8 0 0 1-13.7 5.6", "M18 2.5v4h-4", "M6 21.5v-4h4"]],
+  [/alert|notif|inventory|track/i, ["M6 9a6 6 0 0 1 12 0c0 4 1.5 5.5 2 6H4c.5-.5 2-2 2-6Z", "M10 19a2 2 0 0 0 4 0"]],
+  [/calendar|release|schedul/i, ["M4 6.5h16v13H4z", "M8 3.5v4", "M16 3.5v4", "M4 11h16"]],
+  [/chart|graph|historical|analytic|data/i, ["M4 20V4", "M4 20h16", "M7.5 16.5l3.5-4.5 3 2.8 4.5-6"]],
+  [/listing|storefront|publish|shop|catalog/i, ["M3.5 9 5 4.5h14L20.5 9", "M5 9v10.5h14V9", "M9.5 19.5v-6h5v6"]],
+  [/pricing|price|market|source|retailer|value/i, ["M3.5 3.5h8l9 9-8 8-9-9z", "M7.6 7.6h.01"]],
+  [/scan|barcode|upc/i, ["M3.5 6v12", "M7 6v12", "M10.5 6v9", "M14 6v12", "M17.5 6v12", "M21 6v12"]],
+  [/secure|protect|shield/i, ["M12 3l7 3v5.4c0 4.4-3 7.6-7 9.4-4-1.8-7-5-7-9.4V6l7-3Z", "M9.2 11.8l2 2 3.6-3.8"]],
+];
+
+function featureIcon(text: string, size = 20) {
+  const hit = FEATURE_ICONS.find(([re]) => re.test(text));
+  // The fallback checkmark is a single stroke, so it needs extra weight to
+  // sit as heavy as the multi-path icons beside it.
+  return (
+    <LineIcon
+      paths={hit ? hit[1] : ["M4.5 12.5 9.5 17.5 19.5 6.5"]}
+      width={hit ? 1.8 : 2.4}
+      size={size}
+    />
+  );
+}
+
+/**
+ * One "what you get" tile: an icon chip above the feature.
+ *
+ * Sized to fill the slide rather than hug its text — six tiles bunched at the
+ * top of a 720px canvas read as a list that ran out, not as a set.
+ */
+function FeatureCard({ text }: { text: string }) {
+  return (
+    <div
+      style={{
+        minHeight: 208,
+        padding: "28px 30px",
+        borderRadius: 16,
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "space-between",
+        background: "rgba(255,255,255,0.05)",
+        boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.09)",
+      }}
+    >
+      <div
+        style={{
+          width: 56,
+          height: 56,
+          borderRadius: 14,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          color: ACCENT,
+          background: "rgba(113,216,167,0.13)",
+          boxShadow: "inset 0 0 0 1px rgba(113,216,167,0.38)",
+        }}
+      >
+        {featureIcon(text, 27)}
+      </div>
+      <div style={{ fontSize: 25, lineHeight: 1.25 }}>{text}</div>
+    </div>
+  );
+}
+
 // ── Slide registry ─────────────────────────────────────────────────────────
 
 export type SlideDef = {
@@ -324,31 +425,9 @@ export function buildSlides(p: Prospect, opts?: { all?: boolean }): SlideDef[] {
       <Slide>
         <Title>What {BRAND.name} gives {company}</Title>
         <Rule />
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 18 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 20 }}>
           {FEATURES.map((f) => (
-            <div
-              key={f}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: 16,
-                background: "rgba(255,255,255,0.06)",
-                borderRadius: 14,
-                padding: "22px 26px",
-                fontSize: 24,
-              }}
-            >
-              <span
-                style={{
-                  width: 12,
-                  height: 12,
-                  borderRadius: "50%",
-                  background: ACCENT,
-                  flex: "none",
-                }}
-              />
-              {f}
-            </div>
+            <FeatureCard key={f} text={f} />
           ))}
         </div>
       </Slide>
