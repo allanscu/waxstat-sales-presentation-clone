@@ -70,8 +70,9 @@ Stack: Next.js 16 (App Router) · React 19 · Tailwind v4 · TypeScript.
 
 1. `BRAND`, `FEATURES`, `PARTNERS`, `TIERS` in [lib/deck.ts](lib/deck.ts) —
    all the fixed copy lives there.
-2. The three colours in the `@theme` block of
-   [app/globals.css](app/globals.css).
+2. The colour tokens in the `@theme` block of
+   [app/globals.css](app/globals.css) — and the matching `INK`/`ACCENT`
+   constants at the top of `Slides.tsx`, since slides use inline styles.
 3. The mark in [app/components/BrandMark.tsx](app/components/BrandMark.tsx).
 4. Add or reorder slides in
    [app/components/Slides.tsx](app/components/Slides.tsx).

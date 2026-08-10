@@ -5,7 +5,7 @@ import { BRAND } from "@/lib/deck";
  * logo artwork. Replace the <svg> body with your own vector and the wordmark
  * below picks up BRAND.name.
  */
-export function Mark({ size = 40, color = "#6366f1" }: { size?: number; color?: string }) {
+export function Mark({ size = 40, color = "#71d8a7" }: { size?: number; color?: string }) {
   return (
     <svg width={size} height={size} viewBox="0 0 48 48" fill="none" aria-hidden>
       <rect x="2" y="2" width="44" height="44" rx="12" stroke={color} strokeWidth="3" />
@@ -22,7 +22,7 @@ export function Mark({ size = 40, color = "#6366f1" }: { size?: number; color?: 
 
 export default function BrandLogo({
   size = 40,
-  color = "#6366f1",
+  color = "#71d8a7",
   textColor = "#ffffff",
 }: {
   size?: number;

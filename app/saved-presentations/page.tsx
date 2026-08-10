@@ -67,7 +67,7 @@ export default function SavedPresentations() {
                 {new Date(d.saved_at).toLocaleString()}
               </div>
             </div>
-            <button onClick={() => edit(d)} className="rounded-lg bg-accent px-3 py-1.5 text-sm text-white">
+            <button onClick={() => edit(d)} className="rounded-lg bg-accent px-3 py-1.5 text-sm font-medium text-ink">
               Edit
             </button>
             <button onClick={() => remove(d.id)} className="text-sm text-ink/50 underline">

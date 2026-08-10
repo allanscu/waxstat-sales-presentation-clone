@@ -45,7 +45,7 @@ function LoginForm() {
       <button
         type="submit"
         disabled={busy}
-        className="w-full rounded-lg bg-accent py-2 font-semibold text-white disabled:opacity-50"
+        className="w-full rounded-lg bg-accent py-2 font-semibold text-ink disabled:opacity-50"
       >
         {busy ? "Checking…" : "Enter"}
       </button>

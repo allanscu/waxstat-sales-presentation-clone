@@ -21,8 +21,10 @@ import {
 // Every slide is a 1280×720 canvas laid out in absolute px. ScaledSlide does
 // the fitting, so nothing in here needs to be responsive.
 
-const INK = "#14161c";
-const ACCENT = "#6366f1";
+// Mirrors the tokens in globals.css. Slides are authored in inline styles
+// rather than utility classes, so the values are repeated here on purpose.
+const INK = "#231f20";
+const ACCENT = "#71d8a7";
 
 function Slide({ children, pad = true }: { children: ReactNode; pad?: boolean }) {
   return (
@@ -375,6 +377,9 @@ export function buildSlides(p: Prospect, opts?: { all?: boolean }): SlideDef[] {
                   minHeight: 320,
                   background: t.popular ? ACCENT : "rgba(255,255,255,0.06)",
                   border: `1px solid ${t.popular ? ACCENT : "rgba(255,255,255,0.12)"}`,
+                  // The teal is light: the highlighted card takes onyx text,
+                  // not the white the rest of the slide inherits.
+                  color: t.popular ? INK : "#fff",
                 }}
               >
                 <div style={{ fontSize: 18, letterSpacing: "0.14em", textTransform: "uppercase", opacity: 0.8 }}>
