@@ -39,6 +39,10 @@ export default function Page() {
   useEffect(() => {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
+      // Has to happen after mount — the server render has no localStorage, so
+      // lazy useState init would desync hydration. The extra render is the
+      // cost of that, and is intended.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       if (raw) setP({ ...DEFAULT_PROSPECT, ...JSON.parse(raw) });
     } catch {}
     setLoaded(true);

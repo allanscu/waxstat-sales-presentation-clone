@@ -1,6 +1,6 @@
 "use client";
 
-import { ReactNode, useEffect, useState } from "react";
+import { ReactNode, useState } from "react";
 import BrandLogo from "./BrandMark";
 import {
   BRAND,
@@ -78,8 +78,23 @@ function SmartImg({
   style?: React.CSSProperties;
 }) {
   const list = srcs.filter(Boolean);
+  // Keying on the candidate list remounts the inner component whenever the
+  // list changes, which resets its position for free — a new prospect can't
+  // inherit the previous one's error position. Resetting in an effect instead
+  // would leave one painted frame showing the old index against the new list.
+  return <Fallthrough key={list.join("|")} list={list} alt={alt} style={style} />;
+}
+
+function Fallthrough({
+  list,
+  alt,
+  style,
+}: {
+  list: string[];
+  alt: string;
+  style?: React.CSSProperties;
+}) {
   const [i, setI] = useState(0);
-  useEffect(() => setI(0), [list.join("|")]);
   if (!list.length || i >= list.length) return null;
   return <img src={list[i]} alt={alt} style={style} onError={() => setI(i + 1)} />;
 }
