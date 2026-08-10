@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 96" width="320" height="96">
+  <g fill="#fff">
+    <path d="M12 58c18-2 34-12 44-26 2 16-4 28-16 34-9 4-21 1-28-8z"/>
+    <path d="M30 66c12 0 22-4 30-12-1 10-8 17-18 18-5 1-9-2-12-6z" opacity=".6"/>
+  </g>
+  <text x="80" y="49" font-family="Georgia, serif" font-size="26" font-weight="700" fill="#fff">Wingtip</text>
+  <text x="81" y="70" font-family="Georgia, serif" font-size="12" letter-spacing="5" fill="#fff" opacity=".75">TRADERS</text>
+</svg>

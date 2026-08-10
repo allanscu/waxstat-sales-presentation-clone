@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 96" width="320" height="96">
+  <g fill="#b3261e">
+    <rect x="14" y="26" width="20" height="20" rx="3"/>
+    <rect x="38" y="26" width="20" height="20" rx="3" opacity=".55"/>
+    <rect x="14" y="50" width="20" height="20" rx="3" opacity=".55"/>
+    <rect x="38" y="50" width="20" height="20" rx="3"/>
+  </g>
+  <text x="72" y="50" font-family="Helvetica, Arial, sans-serif" font-size="28" font-weight="700" fill="#b3261e">CONTOSO</text>
+  <text x="73" y="71" font-family="Helvetica, Arial, sans-serif" font-size="12" letter-spacing="6" fill="#b3261e" opacity=".7">RETAIL</text>
+</svg>

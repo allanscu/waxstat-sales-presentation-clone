@@ -44,6 +44,12 @@ Next.js 16 + React 19 + Tailwind v4 + TypeScript. Deploys to Vercel.
 
 ## Content
 
-Everything in `lib/deck.ts` is placeholder. `BRAND` is the vendor; `PARTNERS`
-are fictional names; `TIERS` are made-up prices. Nothing here is real customer
-or pricing data, and it should stay that way.
+Everything in `lib/deck.ts` is placeholder. `BRAND` is the vendor; `TIERS` are
+made-up prices; `PARTNERS` are invented companies whose logos are hand-drawn
+SVGs in `public/partners/`, not any real firm's artwork. Nothing here is real
+customer or pricing data, and it should stay that way.
+
+Partner logos are served from `/public` rather than hot-linked — a partner's
+own CDN URL can change without warning, and local files keep the slide working
+offline and in the PDF. Set `onDark` on any logo drawn in white, or it
+disappears against the default white tile.

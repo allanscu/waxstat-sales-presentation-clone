@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 96" width="320" height="96">
+  <g fill="#c2570a">
+    <path d="M14 62l16-24 16 24z"/>
+    <path d="M34 62l16-24 16 24z" opacity=".6"/>
+  </g>
+  <text x="80" y="49" font-family="'Trebuchet MS', Helvetica, sans-serif" font-size="27" font-weight="700" fill="#c2570a">Fabrikam</text>
+  <text x="81" y="70" font-family="'Trebuchet MS', sans-serif" font-size="12" letter-spacing="4" fill="#c2570a" opacity=".7">WHOLESALE</text>
+</svg>

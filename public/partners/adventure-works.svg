@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 96" width="320" height="96">
+  <g fill="#2d5016">
+    <path d="M12 66L32 30l12 21 7-11 13 26z"/>
+    <circle cx="52" cy="28" r="6" opacity=".6"/>
+  </g>
+  <text x="80" y="49" font-family="Georgia, serif" font-size="26" font-weight="700" fill="#2d5016">Adventure</text>
+  <text x="81" y="70" font-family="Georgia, serif" font-size="13" letter-spacing="6" fill="#2d5016" opacity=".65">WORKS</text>
+</svg>

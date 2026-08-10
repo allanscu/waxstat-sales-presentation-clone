@@ -75,20 +75,33 @@ export const FEATURES = [
   "Automated repricing rules",
 ];
 
+export type Partner = {
+  name: string;
+  logo: string;
+  /** Artwork drawn in white — needs a dark tile behind it, not the usual one. */
+  onDark?: boolean;
+};
+
 /**
- * Social-proof logos in the real app; names only here, so the clone ships no
- * third-party artwork. Point `logo` at a file in /public and render an <img>
- * if you want the logo-wall version.
+ * The logo wall on the social-proof slide.
+ *
+ * These are invented companies with invented artwork, committed as SVGs under
+ * `public/partners/`. Serving them locally rather than hot-linking is what the
+ * real deck does too: a partner's own CDN URL can change without warning, and
+ * local files keep the slide working offline and in the PDF export.
+ *
+ * Swap in your own files and names; keep `onDark` accurate, since white
+ * artwork vanishes on a white tile.
  */
-export const PARTNERS = [
-  "Northwind Trading",
-  "Contoso Retail",
-  "Globex Supply",
-  "Fabrikam Wholesale",
-  "Adventure Works",
-  "Initech Goods",
-  "Tailspin Outfitters",
-  "Wingtip Traders",
+export const PARTNERS: Partner[] = [
+  { name: "Northwind Trading", logo: "/partners/northwind-trading.svg" },
+  { name: "Contoso Retail", logo: "/partners/contoso-retail.svg" },
+  { name: "Globex Supply", logo: "/partners/globex-supply.svg" },
+  { name: "Fabrikam Wholesale", logo: "/partners/fabrikam-wholesale.svg" },
+  { name: "Adventure Works", logo: "/partners/adventure-works.svg" },
+  { name: "Initech Goods", logo: "/partners/initech-goods.svg" },
+  { name: "Tailspin Outfitters", logo: "/partners/tailspin-outfitters.svg", onDark: true },
+  { name: "Wingtip Traders", logo: "/partners/wingtip-traders.svg", onDark: true },
 ];
 
 export type Tier = {

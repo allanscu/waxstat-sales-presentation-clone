@@ -365,24 +365,33 @@ export function buildSlides(p: Prospect, opts?: { all?: boolean }): SlideDef[] {
         <Slide>
           <Title>The industry already trusts us</Title>
           <Rule />
-          <div style={{ display: "flex", flexWrap: "wrap", gap: 16 }}>
-            {PARTNERS.map((name) => (
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 18 }}>
+            {PARTNERS.map((partner) => (
               <div
-                key={name}
+                key={partner.name}
                 style={{
-                  background: "rgba(255,255,255,0.08)",
-                  border: "1px solid rgba(255,255,255,0.14)",
-                  borderRadius: 999,
-                  padding: "18px 30px",
-                  fontSize: 24,
+                  height: 142,
+                  padding: "16px 22px",
+                  borderRadius: 12,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  // White-on-transparent artwork would disappear on a white
+                  // tile, so those partners get a dark one instead.
+                  background: partner.onDark ? "#111827" : "#ffffff",
                 }}
               >
-                {name}
+                <img
+                  src={partner.logo}
+                  alt={partner.name}
+                  style={{ maxHeight: "100%", maxWidth: "100%", objectFit: "contain" }}
+                />
               </div>
             ))}
           </div>
-          <div style={{ marginTop: 40, fontSize: 20, opacity: 0.55 }}>
-            Placeholder names — the real deck renders logo artwork from /public.
+          <div style={{ marginTop: 30, fontSize: 18, opacity: 0.5 }}>
+            Invented companies with invented artwork — swap PARTNERS and the
+            files in /public/partners for your own.
           </div>
         </Slide>
       ),

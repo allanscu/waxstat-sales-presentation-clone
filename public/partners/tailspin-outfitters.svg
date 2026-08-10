@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 96" width="320" height="96">
+  <g fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round">
+    <path d="M60 30c-26-10-46 8-40 24 5 13 26 14 32 2 4-9-4-17-12-13"/>
+    <path d="M52 26l10 3-3 10"/>
+  </g>
+  <text x="80" y="49" font-family="'Trebuchet MS', Helvetica, sans-serif" font-size="26" font-weight="700" fill="#fff">Tailspin</text>
+  <text x="81" y="70" font-family="'Trebuchet MS', sans-serif" font-size="12" letter-spacing="4" fill="#fff" opacity=".75">OUTFITTERS</text>
+</svg>

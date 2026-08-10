@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 96" width="320" height="96">
+  <g stroke="#16624a" stroke-width="4" fill="none">
+    <circle cx="38" cy="48" r="22"/>
+    <ellipse cx="38" cy="48" rx="9" ry="22"/>
+    <path d="M17 40h42M17 56h42"/>
+  </g>
+  <text x="74" y="50" font-family="Helvetica, Arial, sans-serif" font-size="29" font-weight="700" fill="#16624a" letter-spacing="-1">Globex</text>
+  <text x="76" y="71" font-family="Helvetica, Arial, sans-serif" font-size="12" letter-spacing="5" fill="#16624a" opacity=".7">SUPPLY</text>
+</svg>
