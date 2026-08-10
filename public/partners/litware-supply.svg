@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 96" width="320" height="96">
+  <path d="M38 24l19 11v22L38 68 19 57V35z" fill="none" stroke="#0f6f7a" stroke-width="5" stroke-linejoin="round"/>
+  <circle cx="38" cy="46" r="6" fill="#0f6f7a"/>
+  <text x="76" y="49" font-family="Helvetica, Arial, sans-serif" font-size="27" font-weight="700" fill="#0f6f7a">Litware</text>
+  <text x="77" y="70" font-family="Helvetica, Arial, sans-serif" font-size="12" letter-spacing="5" fill="#0f6f7a" opacity=".7">SUPPLY</text>
+</svg>

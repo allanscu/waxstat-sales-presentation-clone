@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 96" width="320" height="96">
+  <path d="M14 48c10-14 30-14 40 0-10 14-30 14-40 0z" fill="none" stroke="#c14b3a" stroke-width="4.5"/>
+  <path d="M54 40l10 8-10 8z" fill="#c14b3a"/>
+  <circle cx="26" cy="45" r="3" fill="#c14b3a"/>
+  <text x="80" y="49" font-family="'Trebuchet MS', Helvetica, sans-serif" font-size="27" font-weight="700" fill="#c14b3a">Coho</text>
+  <text x="81" y="70" font-family="'Trebuchet MS', sans-serif" font-size="12" letter-spacing="4" fill="#c14b3a" opacity=".7">COLLECTIVE</text>
+</svg>

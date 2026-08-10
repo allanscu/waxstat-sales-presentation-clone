@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 96" width="320" height="96">
+  <path d="M38 22l18 26-18 26-18-26z" fill="none" stroke="#3a3a3a" stroke-width="5" stroke-linejoin="round"/>
+  <path d="M38 38l8 10-8 10-8-10z" fill="#3a3a3a"/>
+  <text x="76" y="49" font-family="Georgia, serif" font-size="26" font-weight="700" fill="#3a3a3a">VanArsdel</text>
+  <text x="77" y="70" font-family="Georgia, serif" font-size="12" letter-spacing="6" fill="#3a3a3a" opacity=".65">LIMITED</text>
+</svg>

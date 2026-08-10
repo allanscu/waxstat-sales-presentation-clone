@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 96" width="320" height="96">
+  <path d="M18 38h40l-5 26H23z" fill="none" stroke="#a02b6b" stroke-width="4.5" stroke-linejoin="round"/>
+  <path d="M29 38a9 9 0 0 1 18 0" fill="none" stroke="#a02b6b" stroke-width="4.5"/>
+  <text x="76" y="49" font-family="Georgia, serif" font-size="25" font-weight="700" font-style="italic" fill="#a02b6b">Margie&#39;s</text>
+  <text x="77" y="70" font-family="Georgia, serif" font-size="12" letter-spacing="5" fill="#a02b6b" opacity=".65">MARKET</text>
+</svg>

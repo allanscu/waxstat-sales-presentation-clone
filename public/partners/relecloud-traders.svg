@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 96" width="320" height="96">
+  <path d="M22 60a10 10 0 0 1 2-19.8 14 14 0 0 1 26-4A11 11 0 0 1 54 60z" fill="none" stroke="#1f6fb2" stroke-width="4.5" stroke-linejoin="round"/>
+  <text x="76" y="49" font-family="Helvetica, Arial, sans-serif" font-size="26" font-weight="700" fill="#1f6fb2">Relecloud</text>
+  <text x="77" y="70" font-family="Helvetica, Arial, sans-serif" font-size="12" letter-spacing="5" fill="#1f6fb2" opacity=".7">TRADERS</text>
+</svg>

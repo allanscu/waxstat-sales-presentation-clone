@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 96" width="320" height="96">
+  <g fill="#5a6b2f">
+    <circle cx="38" cy="28" r="8"/>
+    <circle cx="22" cy="58" r="8" opacity=".6"/>
+    <circle cx="54" cy="58" r="8" opacity=".6"/>
+  </g>
+  <text x="76" y="49" font-family="Helvetica, Arial, sans-serif" font-size="27" font-weight="600" fill="#5a6b2f">Trey</text>
+  <text x="77" y="70" font-family="Helvetica, Arial, sans-serif" font-size="12" letter-spacing="4" fill="#5a6b2f" opacity=".7">RESEARCH</text>
+</svg>

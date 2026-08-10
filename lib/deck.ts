@@ -66,13 +66,44 @@ export const THREE_QUESTIONS = [
   { q: "What's it worth?", a: "The live market price" },
 ];
 
-export const FEATURES = [
-  "Live pricing from 30+ sources",
-  "Inventory tracking with alerts",
-  "Release calendar",
-  "Historical data and charts",
-  "One-click storefront listings",
-  "Automated repricing rules",
+export type Feature = {
+  name: string;
+  /** One line on what it actually does. The name is the claim; this earns it. */
+  detail: string;
+};
+
+/**
+ * What the product gives them.
+ *
+ * The name alone states a capability; the detail is what turns it into
+ * something a prospect can picture themselves using. Keep details to one
+ * line — the tile is a prompt for the presenter, not the script.
+ */
+export const FEATURES: Feature[] = [
+  {
+    name: "Live pricing from 30+ sources",
+    detail: "Every retailer carrying the item, refreshed through the day.",
+  },
+  {
+    name: "Inventory tracking with alerts",
+    detail: "Hear the moment a competitor moves on something you hold.",
+  },
+  {
+    name: "Release calendar",
+    detail: "What's coming and when, so you can buy ahead of the rush.",
+  },
+  {
+    name: "Historical data and charts",
+    detail: "Price history behind every item — the trend, not just today.",
+  },
+  {
+    name: "One-click storefront listings",
+    detail: "Push to your store with pricing and images already filled in.",
+  },
+  {
+    name: "Automated repricing rules",
+    detail: "Set the margin once and let the rules hold your prices to it.",
+  },
 ];
 
 export type Partner = {
@@ -93,15 +124,32 @@ export type Partner = {
  * Swap in your own files and names; keep `onDark` accurate, since white
  * artwork vanishes on a white tile.
  */
+/**
+ * Order is presentation, not data: the `onDark` partners are spaced through
+ * the list rather than grouped. Left sorted, the dark tiles collect into one
+ * solid row and the wall reads as a designed band instead of a set of logos.
+ */
 export const PARTNERS: Partner[] = [
   { name: "Northwind Trading", logo: "/partners/northwind-trading.svg" },
   { name: "Contoso Retail", logo: "/partners/contoso-retail.svg" },
+  { name: "Tailspin Outfitters", logo: "/partners/tailspin-outfitters.svg", onDark: true },
   { name: "Globex Supply", logo: "/partners/globex-supply.svg" },
   { name: "Fabrikam Wholesale", logo: "/partners/fabrikam-wholesale.svg" },
   { name: "Adventure Works", logo: "/partners/adventure-works.svg" },
-  { name: "Initech Goods", logo: "/partners/initech-goods.svg" },
-  { name: "Tailspin Outfitters", logo: "/partners/tailspin-outfitters.svg", onDark: true },
   { name: "Wingtip Traders", logo: "/partners/wingtip-traders.svg", onDark: true },
+  { name: "Initech Goods", logo: "/partners/initech-goods.svg" },
+  { name: "Litware Supply", logo: "/partners/litware-supply.svg" },
+  { name: "Alpine Ski House", logo: "/partners/alpine-ski-house.svg", onDark: true },
+  { name: "Proseware Goods", logo: "/partners/proseware-goods.svg" },
+  { name: "Relecloud Traders", logo: "/partners/relecloud-traders.svg" },
+  { name: "VanArsdel Ltd", logo: "/partners/vanarsdel-ltd.svg" },
+  { name: "Fourth Coffee", logo: "/partners/fourth-coffee.svg", onDark: true },
+  { name: "Lucerne Outfitters", logo: "/partners/lucerne-outfitters.svg" },
+  { name: "Trey Research", logo: "/partners/trey-research.svg" },
+  { name: "Woodgrove Supply", logo: "/partners/woodgrove-supply.svg" },
+  { name: "Southridge Supply", logo: "/partners/southridge-supply.svg", onDark: true },
+  { name: "Coho Collective", logo: "/partners/coho-collective.svg" },
+  { name: "Margie's Market", logo: "/partners/margies-market.svg" },
 ];
 
 export type Tier = {

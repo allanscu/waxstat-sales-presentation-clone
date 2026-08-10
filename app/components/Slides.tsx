@@ -5,6 +5,7 @@ import BrandLogo from "./BrandMark";
 import {
   BRAND,
   FEATURES,
+  Feature,
   PARTNERS,
   Prospect,
   THREE_QUESTIONS,
@@ -255,41 +256,56 @@ function featureIcon(text: string, size = 20) {
 }
 
 /**
- * One "what you get" tile: an icon chip above the feature.
+ * One "what you get" tile: an icon chip, the feature, and the line that says
+ * what it actually does.
  *
  * Sized to fill the slide rather than hug its text — six tiles bunched at the
  * top of a 720px canvas read as a list that ran out, not as a set.
  */
-function FeatureCard({ text }: { text: string }) {
+function FeatureCard({ feature }: { feature: Feature }) {
   return (
     <div
       style={{
         minHeight: 208,
-        padding: "28px 30px",
+        padding: "26px 28px",
         borderRadius: 16,
         display: "flex",
         flexDirection: "column",
-        justifyContent: "space-between",
         background: "rgba(255,255,255,0.05)",
         boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.09)",
       }}
     >
       <div
         style={{
-          width: 56,
-          height: 56,
-          borderRadius: 14,
+          width: 52,
+          height: 52,
+          borderRadius: 13,
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
           color: ACCENT,
           background: "rgba(113,216,167,0.13)",
           boxShadow: "inset 0 0 0 1px rgba(113,216,167,0.38)",
+          flex: "none",
         }}
       >
-        {featureIcon(text, 27)}
+        {featureIcon(feature.name, 25)}
       </div>
-      <div style={{ fontSize: 25, lineHeight: 1.25 }}>{text}</div>
+      {/* Pushes the copy to the bottom, so tiles line up across the row even
+          when one name wraps to two lines and its neighbours don't. */}
+      <div style={{ marginTop: "auto", paddingTop: 18 }}>
+        <div style={{ fontSize: 23, lineHeight: 1.22 }}>{feature.name}</div>
+        <div
+          style={{
+            fontSize: 16,
+            lineHeight: 1.35,
+            marginTop: 8,
+            color: "rgba(255,255,255,0.55)",
+          }}
+        >
+          {feature.detail}
+        </div>
+      </div>
     </div>
   );
 }
@@ -427,7 +443,7 @@ export function buildSlides(p: Prospect, opts?: { all?: boolean }): SlideDef[] {
         <Rule />
         <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 20 }}>
           {FEATURES.map((f) => (
-            <FeatureCard key={f} text={f} />
+            <FeatureCard key={f.name} feature={f} />
           ))}
         </div>
       </Slide>
@@ -444,13 +460,15 @@ export function buildSlides(p: Prospect, opts?: { all?: boolean }): SlideDef[] {
         <Slide>
           <Title>The industry already trusts us</Title>
           <Rule />
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 18 }}>
+          {/* 5 across × 4 down for 20 logos. A wall is the point — the count
+              is doing as much work here as any individual name on it. */}
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: 13 }}>
             {PARTNERS.map((partner) => (
               <div
                 key={partner.name}
                 style={{
-                  height: 142,
-                  padding: "16px 22px",
+                  height: 97,
+                  padding: "12px 16px",
                   borderRadius: 12,
                   display: "flex",
                   alignItems: "center",
@@ -468,7 +486,7 @@ export function buildSlides(p: Prospect, opts?: { all?: boolean }): SlideDef[] {
               </div>
             ))}
           </div>
-          <div style={{ marginTop: 30, fontSize: 18, opacity: 0.5 }}>
+          <div style={{ marginTop: 18, fontSize: 15, opacity: 0.45 }}>
             Invented companies with invented artwork — swap PARTNERS and the
             files in /public/partners for your own.
           </div>

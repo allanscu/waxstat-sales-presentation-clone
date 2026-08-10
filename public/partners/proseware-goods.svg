@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 96" width="320" height="96">
+  <g fill="#3b3b8f">
+    <rect x="14" y="30" width="30" height="30" rx="4" opacity=".45"/>
+    <rect x="26" y="40" width="30" height="30" rx="4"/>
+  </g>
+  <text x="70" y="49" font-family="'Trebuchet MS', Helvetica, sans-serif" font-size="26" font-weight="700" fill="#3b3b8f">Proseware</text>
+  <text x="71" y="70" font-family="'Trebuchet MS', sans-serif" font-size="12" letter-spacing="5" fill="#3b3b8f" opacity=".7">GOODS</text>
+</svg>
